@@ -70,7 +70,6 @@ class JellyFinAdapter:
         params = {"userId": userid}
         return self.request_handler.MakeGetRequest(f"UserItems/{id}/UserData", params)
 
-    #TODO use the delete to delete the dup item
     def DeleteItem(self, id : str) -> dict|None:
         p = { "itemId": id }
         return self.request_handler.MakeDeleteRequest(f"Items", p)
