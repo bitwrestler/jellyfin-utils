@@ -37,6 +37,7 @@ def get_episode_title(filepath):
 class JellyfinItem:
     Id : str
     Played : bool
+    Favorite : bool
     MatchesPath : bool
 
 class JellyFinAdapter:
@@ -74,15 +75,17 @@ class JellyFinAdapter:
         p = { "itemId": id }
         return self.request_handler.MakeDeleteRequest(f"Items", p)
 
-
     USER_DATA_PLAYED_PROPERTY_NAME = "Played"
+    USER_DATA_FAVORITE_PROPERTY_NAME = "IsFavorite"
     @staticmethod
     def _get_played_value(values : dict) -> bool:
         return values[JellyFinAdapter.USER_DATA_PLAYED_PROPERTY_NAME]
     @staticmethod
     def _set_played_value(vals : dict, played : bool) -> None:
         vals[JellyFinAdapter.USER_DATA_PLAYED_PROPERTY_NAME] = played
-
+    @staticmethod
+    def _get_favorite_value(values : dict) -> bool:
+        return values[JellyFinAdapter.USER_DATA_FAVORITE_PROPERTY_NAME]
 
     def _findItemsInResult(self,filePath : str, jsonResult : dict) -> Generator[JellyfinItem, None, None]:
         coll = jsonResult["Items"]
@@ -96,7 +99,8 @@ class JellyFinAdapter:
                 continue
             matches = ele["Path"] == filePath
             isPlayed = JellyFinAdapter._get_played_value(udObj)
-            yield JellyfinItem(myid, isPlayed, matches)
+            isFavorite = JellyFinAdapter._get_favorite_value(udObj)
+            yield JellyfinItem(myid, isPlayed,isFavorite, matches)
     def QueryRecordingItem(self, filePath : str, titleSearch : bool = True) -> list[JellyfinItem]:
         query = {
             "recursive": "true",

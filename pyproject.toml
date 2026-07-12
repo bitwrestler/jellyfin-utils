@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jellyfin-utils"
-version = "1.1"
+version = "1.2"
 description = "Set of utils for working with Jellyfin as a python library"
 readme = "README.md"
 requires-python = ">=3.10"
