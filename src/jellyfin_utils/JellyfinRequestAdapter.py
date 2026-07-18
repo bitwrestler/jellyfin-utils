@@ -1,7 +1,7 @@
 import requests
 from typing import Callable
 
-from src.jellyfin_utils import JellyfinConfig
+from . import JellyfinConfig
 
 
 class IJellyfinRequestAdapter:
