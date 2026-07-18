@@ -87,8 +87,7 @@ class JellyFinAdapter(IJellyFinAdapter):
         return self.request_handler.MakeGetRequest(f"UserItems/{id}/UserData", params)
 
     def DeleteItem(self, id : str) -> dict|None:
-        p = { "itemId": id }
-        return self.request_handler.MakeDeleteRequest(f"Items", p)
+        return self.request_handler.MakeDeleteRequest(f"Items/{id}")
 
     USER_DATA_PLAYED_PROPERTY_NAME = "Played"
     USER_DATA_FAVORITE_PROPERTY_NAME = "IsFavorite"
