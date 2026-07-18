@@ -1,3 +1,4 @@
+import os
 import requests
 from typing import Callable
 
@@ -21,6 +22,19 @@ class JellyfinRequestAdapter(IJellyfinRequestAdapter):
 
     def __init__(self, config : JellyfinConfig) -> None:
         self.config = config
+        if os.environ.get("REQUESTS_LOGGING", "").lower() in ("true", "1", "yes"):
+            import http.client
+            import logging
+            import requests
+            # 1. Force low-level http client debugging to show wire traffic
+            http.client.HTTPConnection.debuglevel = 1
+            # 2. Setup standard logging output format
+            logging.basicConfig(
+                level=logging.DEBUG,
+                format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+            )
+            # 3. Force urllib3 to output all its underlying debug statements
+            logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
     def _request(self, endpoint : str, request_callback : Callable[ [str,dict[str,str] ], requests.Response]) -> dict | None:
         url = f"{self.config.ServerURL}/{endpoint}"
