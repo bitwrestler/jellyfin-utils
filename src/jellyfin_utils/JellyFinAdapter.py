@@ -40,7 +40,22 @@ class JellyfinItem:
     Favorite : bool
     MatchesPath : bool
 
-class JellyFinAdapter:
+class IJellyFinAdapter:
+    def Requesthandler(self) -> IJellyfinRequestAdapter:
+        pass
+    def GetUserId(self) -> str | None:
+        pass
+    def GetItemUserInformation(self,id : str) -> dict|None:
+        pass
+    def DeleteItem(self, id : str) -> dict|None:
+        pass
+    def QueryRecordingItem(self, filePath : str, titleSearch : bool = True) -> list[JellyfinItem]:
+        pass
+    def MarkPlayedFlag(self, items : list[JellyfinItem]) -> None:
+        pass
+
+
+class JellyFinAdapter(IJellyFinAdapter):
     def __init__(self, config : JellyfinConfig, request_handler : IJellyfinRequestAdapter|None = None):
         if not config:
             raise Exception("No Jellyfin config provided")
