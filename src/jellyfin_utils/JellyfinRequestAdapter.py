@@ -22,18 +22,31 @@ class JellyfinRequestAdapter(IJellyfinRequestAdapter):
 
     def __init__(self, config : JellyfinConfig) -> None:
         self.config = config
+        import os
+        import sys
+
         if os.environ.get("REQUESTS_LOGGING", "").lower() in ("true", "1", "yes"):
             import http.client
             import logging
-            import requests
-            # 1. Force low-level http client debugging to show wire traffic
+
+            # 1. Force http.client's internal print statements to go to stderr instead of stdout
             http.client.HTTPConnection.debuglevel = 1
-            # 2. Setup standard logging output format
-            logging.basicConfig(
-                level=logging.DEBUG,
-                format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-            )
-            # 3. Force urllib3 to output all its underlying debug statements
+            http.client.print = lambda *args, **kwargs: print(*args, file=sys.stderr, **kwargs)
+
+            # 2. Force reset the root logger to apply your configurations
+            root_logger = logging.getLogger()
+            root_logger.setLevel(logging.DEBUG)
+
+            # Clear out any pre-existing handlers that are blocking configuration
+            if root_logger.hasHandlers():
+                root_logger.handlers.clear()
+
+            # 3. Explicitly attach a StreamHandler pointing to stderr
+            handler = logging.StreamHandler(sys.stderr)
+            handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+            root_logger.addHandler(handler)
+
+            # 4. Set underlying library levels
             logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
     def _request(self, endpoint : str, request_callback : Callable[ [str,dict[str,str] ], requests.Response]) -> dict | None:
